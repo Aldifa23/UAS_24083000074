@@ -1,0 +1,168 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+
+/**
+ *
+ * @author Difa
+ */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class SalonServiceGUI extends JFrame {
+    private final ArrayList<SalonServiceItem> serviceItems = new ArrayList<>();
+    private final DefaultListModel<String> listModel = new DefaultListModel<>();
+    private final JList<String> serviceList;
+
+    public SalonServiceGUI() {
+        setTitle("Salon Service Manager");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Komponen List
+        serviceList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(serviceList);
+
+        // Form Input
+        JTextField nameField = new JTextField(15);
+        JTextField priceField = new JTextField(15);
+        String[] categories = {"Potong Rambut", "Cuci Rambut", "Cat Rambut", "Hair Spa", "Smoothing"};
+        JComboBox<String> categoryCombo = new JComboBox<>(categories);
+
+        // Tombol
+        JButton addButton = new JButton("Tambah");
+        JButton updateButton = new JButton("Ubah");
+        JButton deleteButton = new JButton("Hapus");
+
+        // Panel Form
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        formPanel.add(new JLabel("Nama Layanan:"));
+        formPanel.add(nameField);
+        formPanel.add(new JLabel("Harga (Rp):"));
+        formPanel.add(priceField);
+        formPanel.add(new JLabel("Jenis Layanan:"));
+        formPanel.add(categoryCombo);
+        formPanel.add(addButton);
+        formPanel.add(updateButton);
+
+        // Panel Utama
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(formPanel, BorderLayout.SOUTH);
+        mainPanel.add(deleteButton, BorderLayout.EAST);
+
+        add(mainPanel);
+
+        // Aksi Tombol Tambah
+        addButton.addActionListener(e -> {
+            try {
+                String name = nameField.getText();
+                double price = Double.parseDouble(priceField.getText());
+                String category = (String) categoryCombo.getSelectedItem();
+
+                serviceItems.add(new SalonServiceItem(name, price, category));
+                refreshList();
+                clearFields(nameField, priceField);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Harga harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Aksi Tombol Ubah
+        updateButton.addActionListener(e -> {
+            int index = serviceList.getSelectedIndex();
+            if (index >= 0) {
+                try {
+                    String name = nameField.getText();
+                    double price = Double.parseDouble(priceField.getText());
+                    String category = (String) categoryCombo.getSelectedItem();
+
+                    serviceItems.set(index, new SalonServiceItem(name, price, category));
+                    refreshList();
+                    clearFields(nameField, priceField);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Harga harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Pilih layanan terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        // Aksi Tombol Hapus
+        deleteButton.addActionListener(e -> {
+            int index = serviceList.getSelectedIndex();
+            if (index >= 0) {
+                serviceItems.remove(index);
+                refreshList();
+                clearFields(nameField, priceField);
+            } else {
+                JOptionPane.showMessageDialog(this, "Pilih layanan terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        // Klik pada item list
+        serviceList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                int index = serviceList.getSelectedIndex();
+                if (index >= 0) {
+                    SalonServiceItem item = serviceItems.get(index);
+                    nameField.setText(item.getServiceName());
+                    priceField.setText(String.valueOf(item.getPrice()));
+                    categoryCombo.setSelectedItem(item.getServiceType());
+                }
+            }
+        });
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+   private void refreshList() {
+        listModel.clear();
+        for (SalonServiceItem item : serviceItems) {
+            listModel.addElement(item.toString());
+        }
+    }
+
+    private void clearFields(JTextField nameField, JTextField priceField) {
+        nameField.setText("");
+        priceField.setText("");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new SalonServiceGUI().setVisible(true));
+    }
+}
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+
